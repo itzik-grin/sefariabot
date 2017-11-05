@@ -81,6 +81,7 @@ router.post('/sefraiahook', function (req, res, next) {
                             template: {
                                 type: 'generic',
                                 title: 'ספרי מקורות',
+                                text: 'ספרי מקורות',
                                 buttons: []
                             }
                         }
@@ -90,6 +91,7 @@ router.post('/sefraiahook', function (req, res, next) {
                         templateBooks.data.template.buttons.push({
                             action: 'open_uri',
                             label: element.title,
+                            text: element.title,
                             url: 'https://www.sefaria.org.il/' + element.ref
                         });
                     });
@@ -105,6 +107,7 @@ router.post('/sefraiahook', function (req, res, next) {
                             template: {
                                 type: 'generic',
                                 title: 'מחברים',
+                                text: 'מחברים',
                                 buttons: []
                             }
                         }
