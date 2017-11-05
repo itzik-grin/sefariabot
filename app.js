@@ -4,7 +4,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var https = require('https');
+//var https = require('https');
 
 // var request = require("request");
 var helper = require('./bin/helper');
@@ -19,8 +19,8 @@ var dblayer = require('./bin/dblayer');
 
 require('./bin/config');
 global.request = require("request");
-global.ObjectID = require('mongodb').ObjectID;
-global.Timestamp = require('mongodb').Timestamp;
+// global.ObjectID = require('mongodb').ObjectID;
+// global.Timestamp = require('mongodb').Timestamp;
 global.sefaria_service = require('./bin/sefaria_service')();
 global._ = require('lodash');
 
