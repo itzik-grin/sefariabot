@@ -4,7 +4,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-//var https = require('https');
+
 
 // var request = require("request");
 var helper = require('./bin/helper');
@@ -28,9 +28,6 @@ global.dbObj = new dblayer();
 global.helperObj = new helper();
 
 
-var local = true
-if (local)
-    global.base_url = "http://localhost:4500/v1/";
 var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -48,8 +45,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', index);
 // app.use('/users', users);
 
-app.use(logs);
-app.use('/v1/logs', logsSystem);
+// app.use(logs);
+// app.use('/v1/logs', logsSystem);
 
 /*
  app.use(function (result,req,res,next) {//itzik22
@@ -94,58 +91,12 @@ app.set('port', process.env.PORT || 4500);
  console.log('***********');
  });*/
 
-// var privateKey = fs.readFileSync('ssl/private.pem', 'utf8');
-// var certificate = fs.readFileSync('ssl/public.pem', 'utf8');
-// var ca = fs.readFileSync('ssl/cer.crt', 'utf8');
-// var credentials = {key: privateKey, cert: certificate, ca: ca};
 var httpServer = http.createServer(app);
-// var httpsServer = https.createServer(credentials, app);
-
 httpServer.listen(app.get('port'));
-// httpsServer.listen(443);
 
 // start();
 module.exports = app;
-function createKeyToken(myObj) {
-    var sha256 = require('sha256');
-    var k = "95B0528E61C2BD3676C96523F00B750C06B35A0B46F8DB5C3EDDD3393653FBA0";
-    myObj.app_id = myObj._id.toString();
-    myObj._id = undefined;
-    // console.log(typeof myObj.app_id);
-    var checkKey = sha256(myObj.app_id + myObj.date_create + myObj.date_create + k);
 
-    var b = new Buffer(JSON.stringify({
-        app_id: myObj.app_id,
-        AC: myObj.date_create,
-        UC: myObj.date_create,
-        sign: checkKey
-    }));
-    console.log("***********");
-    // console.log(myObj);
-    console.log('Please copy this token for using an api:');
-    console.log(b.toString('base64'));
-    console.log("***********");
-
-
-    // var elements = signature.split('=');
-    // var method = elements[0];
-    // var signatureHash = elements[1];
-
-    var crypto = require('crypto')
-        , app_id = 'sdfgsdf3g2s13df2g1s3d2g1fs'
-        , key = k
-        , hash;
-    var crypto = require('crypto');
-    hash = crypto.createHmac('sha1', key).update(app_id).digest('hex');
-
-
-    console.log(hash);
-//console.log(signatureHash);
-//console.log(expectedHash);
-    /* if (signatureHash != expectedHash) {
-     //  throw new Error("Couldn't validate the request signature.");
-     }*/
-}
 function start() {
     var messageApiIm = require('messageapi-im')('eyJhcHBfaWQiOiI1OWY4NmI1ZTQzNjYyYjM3YWM1ODg3ODgiLCJhYyI6MTUwOTQ1MjYzOCwidWMiOjE1MDM5MTU5MTUsInNpZ24iOiJkMWNmMmIyMmY2MjM5NDkzZmVjNDZiOTcwNDg1MjA1N2Q4ZWY1YjU2MTgzMWY0MzNhY2JiY2I0ZDI2ODVjMmZlIn0=');
     // messageApiIm.messages.Send({
