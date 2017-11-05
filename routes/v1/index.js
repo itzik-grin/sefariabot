@@ -16,7 +16,9 @@ router.get('/sendmessage', function (req, res, next) {
 
 });
 var messageApiIm = require('messageapi-im')('eyJhcHBfaWQiOiI1OWY4NmI1ZTQzNjYyYjM3YWM1ODg3ODgiLCJhYyI6MTUwOTQ1MjYzOCwidWMiOjE1MDM5MTU5MTUsInNpZ24iOiJkMWNmMmIyMmY2MjM5NDkzZmVjNDZiOTcwNDg1MjA1N2Q4ZWY1YjU2MTgzMWY0MzNhY2JiY2I0ZDI2ODVjMmZlIn0=');
-
+router.get('/', function (req, res) {
+    res.send({status: 'hello!'});
+}
 router.post('/sefraiahook', function (req, res, next) {
     var data = req.body;
     console.log('');
@@ -123,7 +125,7 @@ router.post('/sefraiahook', function (req, res, next) {
 
     }
     else {
-        res.send({status:false})
+        res.send({status: false})
     }
 
 });
