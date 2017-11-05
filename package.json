@@ -1,0 +1,39 @@
+{
+  "name": "sefaria_itzik",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "eslint": "eslint -c .eslintrc bin/viber.js"
+  },
+  "dependencies": {
+    "body-parser": "~1.17.1",
+    "cookie-parser": "~1.4.3",
+    "db-migrate-mongodb": "^1.2.2",
+    "debug": "~2.6.3",
+    "email-validator": "^1.0.7",
+    "express": "~4.15.2",
+    "geocoder": "^0.2.3",
+    "jade": "~1.11.0",
+    "lodash": "^4.17.4",
+    "mailgun-js": "^0.13.1",
+    "messageapi-im": "^1.0.13",
+    "mongodb": "^2.2.30",
+    "mongoose": "^4.11.1",
+    "morgan": "~1.8.1",
+    "promise": "^8.0.0",
+    "request": "^2.81.0",
+    "serve-favicon": "~2.4.2",
+    "sha256": "^0.2.0",
+    "twilio": "^3.6.6"
+  },
+  "devDependencies": {
+    "jasmine": "^2.6.0",
+    "jasmine-core": "^2.6.4",
+    "karma": "^1.7.0",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-jasmine-html-reporter": "^0.2.2",
+    "karma-requirejs": "^1.1.0",
+    "requirejs": "^2.3.3"
+  }
+}
