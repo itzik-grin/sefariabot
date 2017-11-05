@@ -39,6 +39,30 @@ router.post('/sefraiahook', function (req, res, next) {
                     template: {}
                 }
             }
+            if(search=='sefaria'){
+                var templateT={
+                    "customer_id": customer_id,//"59f87acb29d975d5d375d185",
+                    "integration_id": integration_id,//"59f86ba929d975d5d375d16d",
+                    "data": {
+                        type: 'text',
+                        content: 'ברוך הבא ל ספריא. נא שלח טקסט לחיפוש ספר'
+                    }
+                }
+                sendMessage(templateT);
+                return;
+            }
+            else if(search.length<3){
+                var templateT={
+                    "customer_id": customer_id,//"59f87acb29d975d5d375d185",
+                    "integration_id": integration_id,//"59f86ba929d975d5d375d16d",
+                    "data": {
+                        type: 'text',
+                        content: 'לחיפוש אנא שלח טקסט בן 3 אותיות לפחות'
+                    }
+                }
+                sendMessage(templateT);
+                return;
+            }
             sefaria_service.Search(search).then(function (result) {
                 var booksMes = cutMessages(result.books);
                 var personsMsg = cutMessages(result.persons);
