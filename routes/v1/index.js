@@ -183,6 +183,9 @@ var cutMessages = function (items) {
 }
 
 var sendMessage = function (template) {
+    console.log('********')
+    console.log(template)
+    console.log('********')
     messageApiIm.messages.Send(template).then(function (result) {
         var message = result.message;
         console.log(result);
