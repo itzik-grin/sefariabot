@@ -49,6 +49,7 @@ router.post('/sefraiahook', function (req, res, next) {
                     }
                 }
                 sendMessage(templateT);
+                res.send({status: true})
                 return;
             }
             else if(search.length<3){
@@ -61,7 +62,9 @@ router.post('/sefraiahook', function (req, res, next) {
                     }
                 }
                 sendMessage(templateT);
+                res.send({status: true})
                 return;
+
             }
             sefaria_service.Search(search).then(function (result) {
                 var booksMes = cutMessages(result.books);
