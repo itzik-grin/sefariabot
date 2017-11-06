@@ -109,7 +109,7 @@ router.post('/sefraiahook', function (req, res, next) {
                             action: 'open_uri',
                             label: elementChild.title,
                             // text: element.title,
-                            url: 'https://www.sefaria.org.il/' + elementChild.ref ? elementChild.ref : 'search?q=' + elementChild.title
+                            url: 'https://www.sefaria.org.il/' + (elementChild.ref ? elementChild.ref : 'search?q=' + elementChild.title)
                         });
                     });
                     if (element.length)
@@ -135,7 +135,7 @@ router.post('/sefraiahook', function (req, res, next) {
                         templatePersons.data.template.buttons.push({
                             action: 'open_uri',
                             label: elementChild.title,
-                            url: 'https://www.sefaria.org.il/' + elementChild.ref ? elementChild.ref : 'search?q=' + elementChild.title
+                            url: 'https://www.sefaria.org.il/' + (elementChild.ref ? elementChild.ref : 'search?q=' + elementChild.title)
                         })
                     });
                     if (element.length)
@@ -159,9 +159,10 @@ router.post('/sefraiahook', function (req, res, next) {
                         templateOthers.data.template.buttons.push({
                             action: 'open_uri',
                             label: elementChild.title,
-                            url: 'https://www.sefaria.org.il/' + elementChild.ref ? elementChild.ref : 'search?q=' + elementChild.title
+                            url: 'https://www.sefaria.org.il/' +  (elementChild.ref ? elementChild.ref : 'search?q=' + elementChild.title)
                         })
                     });
+                    console.log(templateOthers);
                     if (element.length)
                         sendMessage(templateOthers);
                 });
