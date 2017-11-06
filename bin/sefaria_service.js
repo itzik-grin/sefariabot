@@ -16,7 +16,7 @@ var SefariaService = function () {
                 GetBooks(query).then(function (resultAll) {
                     var dada = resultAll.completions;
                     if (!dada.length)
-                        resolve([]);
+                        resolve(false);
                     else {
 
                         var promisses = [];

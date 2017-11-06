@@ -71,7 +71,7 @@ router.post('/sefraiahook', function (req, res, next) {
 
             }
             sefaria_service.Search(search).then(function (result) {
-                if(!result.length){
+                if(!result){
                     var templateT = {
                         "customer_id": customer_id,//"59f87acb29d975d5d375d185",
                         "integration_id": integration_id,//"59f86ba929d975d5d375d16d",
