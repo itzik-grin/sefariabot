@@ -71,7 +71,7 @@ router.post('/sefraiahook', function (req, res, next) {
 
             }
             sefaria_service.Search(search).then(function (result) {
-                if(!result){
+                if (!result) {
                     var templateT = {
                         "customer_id": customer_id,//"59f87acb29d975d5d375d185",
                         "integration_id": integration_id,//"59f86ba929d975d5d375d16d",
@@ -109,7 +109,7 @@ router.post('/sefraiahook', function (req, res, next) {
                             action: 'open_uri',
                             label: elementChild.title,
                             // text: element.title,
-                            url: 'https://www.sefaria.org.il/' + elementChild.ref
+                            url: 'https://www.sefaria.org.il/' + elementChild.ref ? elementChild.ref : 'search?q=' + elementChild.title
                         });
                     });
                     if (element.length)
@@ -135,7 +135,7 @@ router.post('/sefraiahook', function (req, res, next) {
                         templatePersons.data.template.buttons.push({
                             action: 'open_uri',
                             label: elementChild.title,
-                            url: 'https://www.sefaria.org.il/' + elementChild.ref
+                            url: 'https://www.sefaria.org.il/' + elementChild.ref ? elementChild.ref : 'search?q=' + elementChild.title
                         })
                     });
                     if (element.length)
@@ -159,7 +159,7 @@ router.post('/sefraiahook', function (req, res, next) {
                         templateOthers.data.template.buttons.push({
                             action: 'open_uri',
                             label: elementChild.title,
-                            url: 'https://www.sefaria.org.il/' + elementChild.ref
+                            url: 'https://www.sefaria.org.il/' + elementChild.ref ? elementChild.ref : 'search?q=' + elementChild.title
                         })
                     });
                     if (element.length)
