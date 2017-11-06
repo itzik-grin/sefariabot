@@ -91,15 +91,16 @@ router.post('/sefraiahook', function (req, res, next) {
                         }
 
                     }
-                    element.forEach(function (element) {
+                    element.forEach(function (elementChild) {
                         templateBooks.data.template.buttons.push({
                             action: 'open_uri',
-                            label: element.title,
+                            label: elementChild.title,
                             // text: element.title,
-                            url: 'https://www.sefaria.org.il/' + element.ref
+                            url: 'https://www.sefaria.org.il/' + elementChild.ref
                         });
                     });
-                    sendMessage(templateBooks);
+                    if (element.length)
+                        sendMessage(templateBooks);
                 });
                 personsMsg.forEach(function (element) {
 
@@ -117,14 +118,15 @@ router.post('/sefraiahook', function (req, res, next) {
                         }
 
                     }
-                    element.forEach(function (element) {
+                    element.forEach(function (elementChild) {
                         templatePersons.data.template.buttons.push({
                             action: 'open_uri',
-                            label: element.title,
-                            url: 'https://www.sefaria.org.il/' + element.ref
+                            label: elementChild.title,
+                            url: 'https://www.sefaria.org.il/' + elementChild.ref
                         })
                     });
-                    sendMessage(templatePersons);
+                    if (element.length)
+                        sendMessage(templatePersons);
                 });
                 othersMsg.forEach(function (element) {
                     var templateOthers = {
@@ -140,14 +142,15 @@ router.post('/sefraiahook', function (req, res, next) {
                         }
 
                     }
-                    element.forEach(function (element) {
+                    element.forEach(function (elementChild) {
                         templateOthers.data.template.buttons.push({
                             action: 'open_uri',
-                            label: element.title,
-                            url: 'https://www.sefaria.org.il/' + element.ref
+                            label: elementChild.title,
+                            url: 'https://www.sefaria.org.il/' + elementChild.ref
                         })
                     });
-                    sendMessage(templateOthers);
+                    if (element.length)
+                        sendMessage(templateOthers);
                 });
 
 
@@ -178,12 +181,12 @@ var cutMessages = function (items, integrationType) {
         }
         do {
             var x = [];
-           /* x.push(tempItems[0]);
-            if (tempItems[1])
-                x.push(tempItems[1])
-            if (tempItems[2])
-                x.push(tempItems[2])*/
-            for(var i=0;i<count;i++){
+            /* x.push(tempItems[0]);
+             if (tempItems[1])
+             x.push(tempItems[1])
+             if (tempItems[2])
+             x.push(tempItems[2])*/
+            for (var i = 0; i < count; i++) {
                 if (tempItems[i])
                     x.push(tempItems[i])
             }
