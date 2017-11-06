@@ -30,7 +30,7 @@ router.post('/sefraiahook', function (req, res, next) {
         var customer_id = msg.customer_id;
         var integration_id = msg.integration_id;
 
-        var integrationType = msg.data.integration_type;
+        var integrationType = msg.integration_type;
 
         if (msg.data.type == 'text') {
             var search = msg.data.content;
@@ -167,7 +167,7 @@ module.exports = router;
 
 
 var cutMessages = function (items, integrationType) {
-    var count = integrationType == 'telegram' ? 10 : 3;
+    var count = integrationType == 'telegram' ? 15 : 3;
     var groups = [];
     if (items.length <= count)
         groups.push(items);
