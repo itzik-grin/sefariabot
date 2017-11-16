@@ -214,14 +214,19 @@ var SefariaService = function () {
             }
         }
         var btns = [];
+        var maxIndex = 3;
         for (let str in data.completions) {
-            var btn = {
-                action: 'reply',
-                label: `${data.completions[str]}`,
-                reply_data: `${data.completions[str]}`
+            if (data.completions[str] == query)
+                maxIndex++;
+            else {
+                var btn = {
+                    action: 'reply',
+                    label: `${data.completions[str]}`,
+                    reply_data: `${data.completions[str]}`
+                }
+                if (str < maxIndex)
+                    btns.push(btn);
             }
-            if (str < 3)
-                btns.push(btn);
         }
         template.template.buttons = btns;
         return template;
@@ -238,6 +243,8 @@ var SefariaService = function () {
         return new Promise(function (resolve, reject) {
             SearchIndex(query).then(function (result) {
                 var value = result.heDesc || result.enDesc;
+                if (!value)
+                    value = (result.authors && result.authors[0] ? `מחבר: ${result.authors[0].he || result.authors[0].en}` : 'אין מידע');
                 var template = textTemplate(value);
                 resolve(template);
             })
