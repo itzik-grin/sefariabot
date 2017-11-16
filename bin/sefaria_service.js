@@ -117,6 +117,11 @@ var SefariaService = function () {
                     var template = personTemplate(query, data);
                     resolve({status: true, data: template});
                 }
+                else if (data.type == 'TocCategory') {
+                    //is_segment->specific ref. for exampple url: "Genesis.25.19-28.9"
+                    var template = textTemplate(query + ' ' + data.type, data);
+                    resolve({status: true, data: template});
+                }
                 else {
                     var template = anotherSearchTemplate(query, data);
                     resolve({status: true, data: template});
@@ -233,11 +238,10 @@ var SefariaService = function () {
         return template;
     }
     var textTemplate = function (query, data) {
-        if (query.length > 640)
-            var template = {
-                type: 'text',
-                content: (query.length > 640 ? query.substr(0, 637) + '...' : query)
-            }
+        var template = {
+            type: 'text',
+            content: (query.length > 640 ? query.substr(0, 637) + '...' : query)
+        }
         return template;
     }
 
