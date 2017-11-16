@@ -72,7 +72,7 @@ var SefariaService = function () {
         else {
             var ResQuery = query.split(':');
             if (ResQuery && ResQuery.length && ResQuery[0] == 'q') {
-                return querySearch(ResQueryesQ);
+                return querySearch(ResQuery);
             }
             else {
                 return newSearch(query)
