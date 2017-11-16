@@ -83,10 +83,20 @@ var SefariaService = function () {
     }
     var querySearch = function (queryArr) {
         return new Promise(function (resolve, reject) {
-            var template = textTemplate(`${queryArr[1]} ${queryArr[2]}`, {});
-            resolve({status: true, data: template});
-        });
-
+            switch (queryArr[1]) {
+                case "about":
+                    aboutResult(`${queryArr[2]}`, {}).then(function (template) {
+                        resolve({status: true, data: template});
+                    });
+                    break;
+                case "search":
+                    return textTemplate(`${queryArr[1]} ${queryArr[2]}`, {});
+                    break;
+                default:
+                    return textTemplate(`${queryArr[1]} ${queryArr[2]}`, {});
+                    break;
+            }
+        })
     }
     var newSearch = function (query) {
         return new Promise(function (resolve, reject) {
@@ -115,10 +125,6 @@ var SefariaService = function () {
             });
         });
     }
-    var SearchName = function (query, options) {
-        //https://www.sefaria.org.il/api/name/%D7%A9%D7%9C%D7%95%D7%9D
-        return exec('name', 'GET', query, options);
-    };
 
     var bookTemplate = function (query, data) {
         var template = {
@@ -203,7 +209,7 @@ var SefariaService = function () {
             template: {
                 type: 'generic',
                 title: `לא נמצא`,
-                text:  `אולי אתה מתכוון אל:`,
+                text: `אולי אתה מתכוון אל:`,
                 buttons: []
             }
         }
@@ -227,6 +233,16 @@ var SefariaService = function () {
         }
         return template;
     }
+
+    var aboutResult = function (query) {
+        return new Promise(function (resolve, reject) {
+            SearchIndex(query).then(function (result) {
+                var value = result.heDesc || result.enDesc;
+                var template = textTemplate(value);
+                resolve(template);
+            })
+        })
+    }
     this.books.Get = function (query) {
         if (!query)
             throw Error('Missing query');
@@ -234,6 +250,16 @@ var SefariaService = function () {
             throw Error('invalid query');
         else
             return SearchName(query);
+    };
+
+
+    var SearchName = function (query, options) {
+        //https://www.sefaria.org.il/api/name/%D7%A9%D7%9C%D7%95%D7%9D
+        return exec('name', 'GET', query, options);
+    };
+    var SearchIndex = function (query, options) {
+        //https://www.sefaria.org/api/v2/index/%D7%A9%D7%9C%D7%95%D7%9D
+        return exec('v2/index', 'GET', query, options);
     };
     var exec = function (collection, method, query, data) {
         var deferred = Q.defer();
