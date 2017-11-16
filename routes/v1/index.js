@@ -205,8 +205,8 @@ router.post('/sefraiahook', function (req, res, next) {
                     template: {}
                 }
             }
-            baseTemplate.customer_id = '59f87acb29d975d5d375d185';
-            baseTemplate.integration_id = '59f86ba929d975d5d375d16d';
+            // baseTemplate.customer_id = '59f87acb29d975d5d375d185';
+            //baseTemplate.integration_id = '59f86ba929d975d5d375d16d';
             if (search == 'sefaria') {
                 var templateT = {
                     "customer_id": customer_id,//"59f87acb29d975d5d375d185",
