@@ -90,10 +90,11 @@ var SefariaService = function () {
                     });
                     break;
                 case "search":
-                    return textTemplate(`${queryArr[1]} ${queryArr[2]}`, {});
+                    resolve({status: true, data: textTemplate(`${queryArr[1]} ${queryArr[2]}`, {})});
                     break;
                 default:
-                    return textTemplate(`${queryArr[1]} ${queryArr[2]}`, {});
+
+                    resolve({status: true, data: textTemplate(`${queryArr[1]} ${queryArr[2]}`, {})});
                     break;
             }
         })
@@ -232,10 +233,11 @@ var SefariaService = function () {
         return template;
     }
     var textTemplate = function (query, data) {
-        var template = {
-            type: 'text',
-            content: query
-        }
+        if (query.length > 640)
+            var template = {
+                type: 'text',
+                content: (query.length > 640 ? query.substr(0, 637) + '...' : query)
+            }
         return template;
     }
 
