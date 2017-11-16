@@ -19,7 +19,7 @@ var messageApiIm = require('messageapi-im')('eyJhcHBfaWQiOiI1OWY4NmI1ZTQzNjYyYjM
 router.get('/', function (req, res) {
     res.send({status: 'hello!'});
 })
-router.post('/sefraiahook', function (req, res, next) {
+router.post('/sefraiahookOLD', function (req, res, next) {
     var data = req.body;
     console.log('');
     console.log(data);
@@ -159,7 +159,7 @@ router.post('/sefraiahook', function (req, res, next) {
                         templateOthers.data.template.buttons.push({
                             action: 'open_uri',
                             label: elementChild.title,
-                            url: 'https://www.sefaria.org.il/' +  (elementChild.ref ? elementChild.ref : 'search?q=' + elementChild.title)
+                            url: 'https://www.sefaria.org.il/' + (elementChild.ref ? elementChild.ref : 'search?q=' + elementChild.title)
                         })
                     });
                     console.log(templateOthers);
@@ -174,6 +174,85 @@ router.post('/sefraiahook', function (req, res, next) {
             });
         }
 
+    }
+    else {
+        res.send({status: false})
+    }
+
+});
+
+router.post('/sefraiahook', function (req, res, next) {
+    var data = req.body;
+    console.log('');
+    console.log(data);
+    console.log('');
+
+    if (data.event == 'NEW_MESSAGE') {
+        var msg = data.data;
+        var customer_id = msg.customer_id;
+        var integration_id = msg.integration_id;
+
+        var integrationType = msg.integration_type;
+
+        if (msg.data.type == 'text') {
+            var search = msg.data.content;
+
+            var baseTemplate = {
+                "customer_id": customer_id,//"59f87acb29d975d5d375d185",
+                "integration_id": integration_id,//"59f86ba929d975d5d375d16d",
+                "data": {
+                    type: 'template',
+                    template: {}
+                }
+            }
+            baseTemplate.customer_id = '59f87acb29d975d5d375d185';
+            baseTemplate.integration_id = '59f86ba929d975d5d375d16d';
+            if (search == 'sefaria') {
+                var templateT = {
+                    "customer_id": customer_id,//"59f87acb29d975d5d375d185",
+                    "integration_id": integration_id,//"59f86ba929d975d5d375d16d",
+                    "data": {
+                        type: 'text',
+                        content: 'ברוך הבא ל ספריא. נא שלח טקסט לחיפוש ספר'
+                    }
+                }
+                sendMessage(templateT);
+                res.send({status: true})
+                return;
+            }
+            else if (search.length < 3) {
+                var templateT = {
+                    "customer_id": customer_id,//"59f87acb29d975d5d375d185",
+                    "integration_id": integration_id,//"59f86ba929d975d5d375d16d",
+                    "data": {
+                        type: 'text',
+                        content: 'לחיפוש אנא שלח טקסט בן 3 אותיות לפחות'
+                    }
+                }
+                sendMessage(templateT);
+                res.send({status: true})
+                return;
+
+            }
+            sefaria_service.SearchNew(search).then(function (result) {
+
+                var templateMSG = {
+                    customer_id: baseTemplate.customer_id,
+                    integration_id: baseTemplate.integration_id,
+                    data: result.data
+                }
+                sendMessage(templateMSG);
+
+
+                console.log(result);
+                res.send(result);
+            });
+
+
+        }
+        else {
+            res.send({status: false})
+        }
     }
     else {
         res.send({status: false})

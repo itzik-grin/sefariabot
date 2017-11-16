@@ -13,7 +13,7 @@ var SefariaService = function () {
             if (typeof query === "object")
                 throw Error('invalid query');
             else
-                GetBooks(query).then(function (resultAll) {
+                SearchName(query).then(function (resultAll) {
                     var dada = resultAll.completions;
                     if (!dada.length)
                         resolve(false);
@@ -21,7 +21,7 @@ var SefariaService = function () {
 
                         var promisses = [];
                         dada.forEach(function (element) {
-                            promisses.push(GetBooks(element))
+                            promisses.push(SearchName(element))
                         });
                         Promise.all(promisses).then(function (result) {
                                 var books = [], Persons = [], others = [], unknow = [];
@@ -64,18 +64,176 @@ var SefariaService = function () {
         });
         return promise;
     };
-    var GetBooks = function (query, options) {
+    this.SearchNew = function (query) {
+        if (!query)
+            throw Error('Missing query');
+        if (typeof query === "object")
+            throw Error('invalid query');
+        else {
+            var ResQuery = query.split(':');
+            if (ResQuery && ResQuery.length && ResQuery[0] == 'q') {
+                return querySearch(ResQueryesQ);
+            }
+            else {
+                return newSearch(query)
+            }
+
+        }
+
+    }
+    var querySearch = function (queryArr) {
+        return new Promise(function (resolve, reject) {
+            var template = textTemplate(`${queryArr[1]} ${queryArr[2]}`, {});
+            resolve({status: true, data: template});
+        });
+
+    }
+    var newSearch = function (query) {
+        return new Promise(function (resolve, reject) {
+            SearchName(query).then(function (resultAll) {
+                var data = resultAll;
+                if (data.is_book) {
+                    var template = bookTemplate(query, data);
+                    resolve({status: true, data: template});
+                }
+                else if (data.type == 'ref' && data.is_ref) {
+                    //is_segment->specific ref. for exampple url: "Genesis.25.19-28.9"
+                    var template = refTemplate(query, data);
+                    resolve({status: true, data: template});
+                }
+                else if (data.type == 'Person') {
+                    //is_segment->specific ref. for exampple url: "Genesis.25.19-28.9"
+                    var template = personTemplate(query, data);
+                    resolve({status: true, data: template});
+                }
+                else {
+                    var template = anotherSearchTemplate(query, data);
+                    resolve({status: true, data: template});
+                }
+            }, function (err) {
+                reject({status: false, err: err})
+            });
+        });
+    }
+    var SearchName = function (query, options) {
         //https://www.sefaria.org.il/api/name/%D7%A9%D7%9C%D7%95%D7%9D
         return exec('name', 'GET', query, options);
     };
 
+    var bookTemplate = function (query, data) {
+        var template = {
+            type: 'template',
+            template: {
+                type: 'generic',
+                title: query,
+                text: query,
+                buttons: [
+                    {
+                        action: 'reply',
+                        label: 'אודות',
+                        reply_data: `q:about:${query}`
+                        //url: `https://www.sefaria.org/api/v2/index/${query}`
+                    },
+                    {
+                        action: 'open_uri',
+                        label: ` פתח ${query}`,
+                        url: `https://www.sefaria.org/${data.ref}`
+                        //url: `https://www.sefaria.org/api/v2/index/${data.ref}`
+                    },
+                    {
+                        action: 'reply',
+                        label: `חפש ב${query}`,
+                        reply_data: `q:search:${query}`
+                        //url: `https://www.sefaria.org/api/v2/index/${dada.ref}`
+                    }
+                ]
+            }
+        }
+        return template;
+    }
+
+    var refTemplate = function (query, data) {
+        var template = {
+            type: 'template',
+            template: {
+                type: 'generic',
+                title: query,
+                text: data.book,
+                buttons: [
+                    {
+                        action: 'open_uri',
+                        label: ` פתח ${query}`,
+                        url: `https://www.sefaria.org/${data.ref}`
+                        //url: `https://www.sefaria.org/api/v2/index/${data.ref}`
+                    },
+                    {
+                        action: 'reply',
+                        label: `חפש ב- ${query}`,
+                        reply_data: `q:search:${query}`
+                        //url: `https://www.sefaria.org/api/v2/index/${dada.ref}`
+                    }
+                ]
+            }
+        }
+        return template;
+    }
+    var personTemplate = function (query, data) {
+        var template = {
+            type: 'template',
+            template: {
+                type: 'generic',
+                title: query,
+                text: data.book,
+                buttons: [
+                    {
+                        action: 'open_uri',
+                        label: ` אודות ${query}`,
+                        url: (data.ref ? `https://www.sefaria.org/${data.ref}` : `https://www.sefaria.org/person/${data.key}`)
+
+                        //url: `https://www.sefaria.org/api/v2/index/${data.ref}`
+                    }
+                ]
+            }
+        }
+        return template;
+    }
+    var anotherSearchTemplate = function (query, data) {
+        var template = {
+            type: 'template',
+            template: {
+                type: 'generic',
+                title: `לא נמצא`,
+                text:  `אולי אתה מתכוון אל:`,
+                buttons: []
+            }
+        }
+        var btns = [];
+        for (let str in data.completions) {
+            var btn = {
+                action: 'reply',
+                label: `${data.completions[str]}`,
+                reply_data: `${data.completions[str]}`
+            }
+            if (str < 3)
+                btns.push(btn);
+        }
+        template.template.buttons = btns;
+        return template;
+    }
+    var textTemplate = function (query, data) {
+        var template = {
+            type: 'text',
+            content: query
+        }
+        return template;
+    }
     this.books.Get = function (query) {
         if (!query)
             throw Error('Missing query');
         if (typeof query === "object")
             throw Error('invalid query');
         else
-            return GetBooks(query);
+            return SearchName(query);
     };
     var exec = function (collection, method, query, data) {
         var deferred = Q.defer();
