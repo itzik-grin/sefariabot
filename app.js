@@ -156,8 +156,6 @@ function start() {
         var othersMsg = cutMessages(result.others);
 
 
-
-
         booksMes.forEach(function (element) {
             var templateBooks = {
                 type: 'generic',
@@ -313,4 +311,88 @@ function start() {
     });
 
 
+}
+// ttt()
+function ttt() {
+    var TEMP = [
+        {
+            category: "Tanakh",
+            heCategory: "תנ",
+            contents: [{
+                category: "Torah",
+                heCategory: "תורה",
+                contents: [
+                    {
+                        heTitle: "בראשית",
+                        heComplete: true,
+                        firstSection: "Genesis 1",
+                        primary_category: "Tanakh",
+                        enComplete: true,
+                        title: "Genesis",
+                        dependence: false,
+                        categories: [
+                            "Tanakh",
+                            "Torah"
+                        ],
+                        order: 2
+                    },
+                    {
+                        heTitle: "שמות",
+                        heComplete: true,
+                        firstSection: "Exodus 1",
+                        primary_category: "Tanakh",
+                        enComplete: true,
+                        title: "Exodus",
+                        dependence: false,
+                        categories: [
+                            "Tanakh",
+                            "Torah"
+                        ],
+                        order: 3
+                    },
+                    {
+                        heTitle: "ויקרא",
+                        heComplete: true,
+                        firstSection: "Leviticus 1",
+                        primary_category: "Tanakh",
+                        enComplete: true,
+                        title: "Leviticus",
+                        dependence: false,
+                        categories: [
+                            "Tanakh",
+                            "Torah"
+                        ],
+                        order: 4
+                    }]
+            },
+                {
+                    category: "Mishnah",
+                    heCategory: "משנה",
+                    contents: []
+                }]
+        }];
+
+    // var data = _.filter(TEMP, {heCategory: 'תורה'})[0];
+    // if (data)
+    //     console.log(resultInner(data.contents));
+    var res = findInnerCategory(TEMP, 'תורה');
+    console.log(res);
+    function findInnerCategory(data, query) {
+         for (var item of data) {
+            // var result = _.filter(item, {heCategory: query})[0];
+            if (item.heCategory == query || item.category == query)
+                return resultInner(item.contents);
+            else
+                return findInnerCategory(item.contents,query)
+        }
+    }
+
+    function resultInner(data) {
+        var arr = [];
+        for (var cat of data) {
+            console.log(cat);
+            arr.push(cat.heTitle || cat.title || cat.heCategory || cat.category);
+        }
+        return arr;
+    }
 }

@@ -90,6 +90,7 @@ var SefariaService = function () {
                     });
                     break;
                 case "search":
+                    var Chapter;
                     resolve({status: true, data: textTemplate(`${queryArr[1]} ${queryArr[2]}`, {})});
                     break;
                 default:
@@ -119,8 +120,10 @@ var SefariaService = function () {
                 }
                 else if (data.type == 'TocCategory') {
                     //is_segment->specific ref. for exampple url: "Genesis.25.19-28.9"
-                    var template = textTemplate(query + ' ' + data.type, data);
-                    resolve({status: true, data: template});
+                    GetChildCategory(query).then(function (template) {
+                        resolve({status: true, data: template});
+                    })
+
                 }
                 else {
                     var template = anotherSearchTemplate(query, data);
@@ -155,7 +158,7 @@ var SefariaService = function () {
                     {
                         action: 'reply',
                         label: `חפש ב${query}`,
-                        reply_data: `q:search:${query}`
+                        reply_data: `q:search:${query}:${data.heSectionNames[0]}` + (data.heSectionNames[1] ? `,${data.heSectionNames[1]}` : '')
                         //url: `https://www.sefaria.org/api/v2/index/${dada.ref}`
                     }
                 ]
@@ -244,7 +247,32 @@ var SefariaService = function () {
         }
         return template;
     }
-
+    var categoryTemplate = function (query, data) {
+        var template = {
+            type: 'template',
+            template: {
+                type: 'generic',
+                title: `נמצא בקטגוריות`,
+                text: `ראה להלן`,
+                buttons: []
+            }
+        }
+        var btns = [];
+        var maxIndex = 3;
+        var index = 0;
+        for (let str of data) {
+            var btn = {
+                action: 'reply',
+                label: `${str}`,
+                reply_data: `${str}`
+            }
+            if (index < maxIndex)
+                btns.push(btn);
+            index++;
+        }
+        template.template.buttons = btns;
+        return template;
+    }
     var aboutResult = function (query) {
         return new Promise(function (resolve, reject) {
             SearchIndex(query).then(function (result) {
@@ -273,6 +301,38 @@ var SefariaService = function () {
     var SearchIndex = function (query, options) {
         //https://www.sefaria.org/api/v2/index/%D7%A9%D7%9C%D7%95%D7%9D
         return exec('v2/index', 'GET', query, options);
+    };
+    var GetChildCategory = function (query, options) {
+        //https://www.sefaria.org/api/v2/index/%D7%A9%D7%9C%D7%95%D7%9D
+        return new Promise(function (resolve, reject) {
+            exec('index', 'GET', '', options).then(function (result) {
+                var data = findInnerCategory(result, query);
+                var template = categoryTemplate(query, data);
+                resolve(template);
+            })
+        })
+
+        function findInnerCategory(data, query) {
+            for (var item of data) {
+                // var result = _.filter(item, {heCategory: query})[0];
+                if (item.heCategory == query || item.category == query)
+                    return resultInner(item.contents);
+
+            }
+            if (data.contents)
+                return findInnerCategory(item.contents, query)
+            else
+                return [];
+        }
+
+        function resultInner(data) {
+            var arr = [];
+            for (var cat of data) {
+                console.log(cat);
+                arr.push(cat.heTitle || cat.title || cat.heCategory || cat.category);
+            }
+            return arr;
+        }
     };
     var exec = function (collection, method, query, data) {
         var deferred = Q.defer();
