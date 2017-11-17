@@ -168,15 +168,19 @@ var SefariaService = function () {
                         label: ` פתח ${query}`,
                         url: `https://www.sefaria.org/${data.ref}`
                         //url: `https://www.sefaria.org/api/v2/index/${data.ref}`
-                    },
-                    {
-                        action: 'reply',
-                        label: `חפש ב${query}`,
-                        reply_data: `q:search:${query}:${data.heSectionNames[0]}` + (data.heSectionNames[1] ? `,${data.heSectionNames[1]}` : '')
-                        //url: `https://www.sefaria.org/api/v2/index/${dada.ref}`
-                    }
-                ]
+                    }]
+
             }
+
+        }
+        if (data.heSectionNames) {
+            template.template.buttons.push(
+                {
+                    action: 'reply',
+                    label: `חפש ב${query}`,
+                    reply_data: `q:search:${query}:${data.heSectionNames[0]}` + (data.heSectionNames[1] ? `,${data.heSectionNames[1]}` : '')
+                    //url: `https://www.sefaria.org/api/v2/index/${dada.ref}`
+                })
         }
         return template;
     }
