@@ -235,13 +235,28 @@ router.post('/sefraiahook', function (req, res, next) {
 
             }
             sefaria_service.SearchNew(search).then(function (result) {
+                if (Array.isArray(result.data)) {
+                    var ind = 0;
+                    for (var te of result.data) {
+                        var templateMSG = {
+                            customer_id: baseTemplate.customer_id,
+                            integration_id: baseTemplate.integration_id,
+                            data: te
+                        }
+                        ind++;
+                        // setTimeout(function () {
+                            sendMessage(templateMSG);
+                        // }(800 * ind))
 
-                var templateMSG = {
-                    customer_id: baseTemplate.customer_id,
-                    integration_id: baseTemplate.integration_id,
-                    data: result.data
+                    }
+                } else {
+                    var templateMSG = {
+                        customer_id: baseTemplate.customer_id,
+                        integration_id: baseTemplate.integration_id,
+                        data: result.data
+                    }
+                    sendMessage(templateMSG);
                 }
-                sendMessage(templateMSG);
 
 
                 console.log(result);

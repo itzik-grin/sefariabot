@@ -260,18 +260,40 @@ var SefariaService = function () {
         var btns = [];
         var maxIndex = 3;
         var index = 0;
+        var arrTemplates = [{
+            type: 'template',
+            template: {
+                type: 'generic',
+                title: `קטגוריה - ` + query,
+                text: `המשך`,
+                buttons: []
+            }
+        }];
         for (let str of data) {
             var btn = {
                 action: 'reply',
                 label: `${str}`,
                 reply_data: `${str}`
             }
-            if (index < maxIndex)
-                btns.push(btn);
-            index++;
+            if (index < maxIndex) {
+
+                index++;
+            } else {
+                index = 1;
+                arrTemplates.push({
+                    type: 'template',
+                    template: {
+                        type: 'generic',
+                        title: `קטגוריה - ` + query,
+                        text: `המשך`,
+                        buttons: []
+                    }
+                })
+            }
+            arrTemplates[arrTemplates.length - 1].template.buttons.push(btn);
         }
-        template.template.buttons = btns;
-        return template;
+        //arrTemplates[arrTemplates.length-1].template.buttons = btns;
+        return arrTemplates;
     }
     var aboutResult = function (query) {
         return new Promise(function (resolve, reject) {
@@ -307,8 +329,8 @@ var SefariaService = function () {
         return new Promise(function (resolve, reject) {
             exec('index', 'GET', '', options).then(function (result) {
                 var data = findInnerCategory(result, query);
-                var template = categoryTemplate(query, data);
-                resolve(template);
+                var templateArr = categoryTemplate(query, data);
+                resolve(templateArr);
             })
         })
 
