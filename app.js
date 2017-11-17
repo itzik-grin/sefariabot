@@ -26,7 +26,7 @@ global._ = require('lodash');
 
 global.dbObj = new dblayer();
 global.helperObj = new helper();
-
+global.SEARCH_CLIENTS_ARR = [];
 
 var app = express();
 // view engine setup

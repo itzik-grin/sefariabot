@@ -64,14 +64,17 @@ var SefariaService = function () {
         });
         return promise;
     };
-    this.SearchNew = function (query) {
+    this.SearchNew = function (query, clientSearch) {
         if (!query)
             throw Error('Missing query');
         if (typeof query === "object")
             throw Error('invalid query');
         else {
             var ResQuery = query.split(':');
-            if (ResQuery && ResQuery.length && ResQuery[0] == 'q') {
+            if (clientSearch) {
+                return SearchApi(query, clientSearch.categoriesForSearch)
+            }
+            else if (ResQuery && ResQuery.length && ResQuery[0] == 'q') {
                 return querySearch(ResQuery);
             }
             else {
@@ -90,14 +93,25 @@ var SefariaService = function () {
                     });
                     break;
                 case "search":
-                    var Chapter;
-                    resolve({status: true, data: textTemplate(`${queryArr[1]} ${queryArr[2]}`, {})});
+                    createSearchDataForClient(`${queryArr[2]}`).then(function (result) {
+                        resolve(result);
+                    });
+                    //resolve({status: true, data: textTemplate(`${queryArr[1]} ${queryArr[2]}`, {})});
                     break;
                 default:
 
                     resolve({status: true, data: textTemplate(`${queryArr[1]} ${queryArr[2]}`, {})});
                     break;
             }
+        })
+    }
+    var createSearchDataForClient = function (query) {
+        return new Promise(function (resolve, reject) {
+            SearchIndex(query).then(function (result) {
+                var categories = result.categories;
+                var template = textTemplate('הקש טקסט לחיפוש ב' + query, {})
+                resolve({status: true, data: template, categoriesForSearch: categories})
+            })
         })
     }
     var newSearch = function (query) {
@@ -324,6 +338,90 @@ var SefariaService = function () {
         //https://www.sefaria.org/api/v2/index/%D7%A9%D7%9C%D7%95%D7%9D
         return exec('v2/index', 'GET', query, options);
     };
+
+    var SearchApi = function (query, categories) {
+        var regexCat = '';
+        for (var ind in categories) {
+            regexCat += (ind > 0 ? "/" : '') + categories[ind];
+        }
+        regexCat += '.*';
+        return new Promise(function (resolve, reject) {
+            var postQuery = {
+                "size": 100,
+                "highlight": {
+                    "pre_tags": [
+                        "<b>"
+                    ],
+                    "post_tags": [
+                        "</b>"
+                    ],
+                    "fields": {
+                        "content": {
+                            "fragment_size": 200
+                        }
+                    }
+                },
+                "sort": [
+                    {
+                        "comp_date": {}
+                    },
+                    {
+                        "order": {}
+                    }
+                ],
+                "query": {
+                    "filtered": {
+                        "query": {
+                            "match_phrase": {
+                                "exact": {
+                                    "query": query
+                                }
+                            }
+                        },
+                        "filter": {
+                            "bool": {
+                                "must": [
+                                    {
+                                        "or": [
+                                            {
+                                                "regexp": {
+                                                    "path": regexCat//"Tanakh\\/Torah\\/Exodus.*"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": {
+                                            "value": "text"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+            execPost('https://search.sefaria.org/sefaria/_search', 'POST', postQuery).then(function (result) {
+                console.log(result);
+                var template;
+                if (result.hits.hits.length) {
+                    var max = result.hits.hits.length;
+                    if (max > 5)
+                        max = 5;
+                    var arrTemplates = [];
+                    for (var i = 0; i < max; i++) {
+                        arrTemplates.push(textTemplate(`${result.hits.hits[i]._source.prev_content} (${result.hits.hits[i]._source.heRef})`));
+                    }
+                    resolve({status: true, data: arrTemplates});
+                }
+
+                else {
+                    template = textTemplate('אין תוצאות');
+                    resolve({status: true, data: template});
+                }
+            })
+        });
+    }
     var GetChildCategory = function (query, options) {
         //https://www.sefaria.org/api/v2/index/%D7%A9%D7%9C%D7%95%D7%9D
         return new Promise(function (resolve, reject) {
@@ -406,6 +504,41 @@ var SefariaService = function () {
 
         return deferred.promise;
     }
+    var execPost = function (url, method, data) {
+        var deferred = Q.defer();
+        var options = {
+            method: method,
+            url: url,
+            headers: {
+                //     'authorization': APP_SECRET,
+                'content-type': 'application/json'
+            },
+            json: data || true,
+            qs: (method == 'GET' ? data : {})
+        };
+        // if (ID)
+        //     options.url += '/' + ID;
+        console.log(options)
+        request(options, function (error, response, body) {
+            if (error) {
+                deferred.reject(error);
+                return;
+            }
+            if (response.statusCode != 200)
+                deferred.reject(body);
+
+            else {
+                try {
+                    deferred.resolve(body);
+                } catch (e) {
+                    deferred.reject("ERROR");
+                }
+            }
+            // callback(error, response, body);
+        });
+
+        return deferred.promise;
+    }
 
 }
 
@@ -413,3 +546,4 @@ module.exports = function () {
     var _sefariaService = new SefariaService();
     return _sefariaService;
 };
+

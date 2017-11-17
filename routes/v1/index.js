@@ -234,7 +234,29 @@ router.post('/sefraiahook', function (req, res, next) {
                 return;
 
             }
-            sefaria_service.SearchNew(search).then(function (result) {
+            let clientSearch = _.filter(SEARCH_CLIENTS_ARR, {customer_id: baseTemplate.customer_id})[0];
+
+            sefaria_service.SearchNew(search, clientSearch).then(function (result) {
+                console.log(SEARCH_CLIENTS_ARR);
+                var clientSearchA = _.filter(SEARCH_CLIENTS_ARR, {customer_id: baseTemplate.customer_id})[0];
+
+                if (clientSearchA || clientSearch) {
+                    //var ind = SEARCH_CLIENTS_ARR.indexOf(clientSearch);//
+                    _.remove(SEARCH_CLIENTS_ARR, {customer_id: baseTemplate.customer_id});
+                    SEARCH_CLIENTS_ARR = [];//TEMP
+                    //SEARCH_CLIENTS_ARR.splice(ind, 1);
+                }
+                if (result.categoriesForSearch) {
+                    var client = _.filter(SEARCH_CLIENTS_ARR, {customer_id: baseTemplate.customer_id})[0];
+                    if (client)
+                        client.categoriesForSearch = result.categoriesForSearch;
+                    else {
+                        SEARCH_CLIENTS_ARR.push({
+                            customer_id: baseTemplate.customer_id,
+                            categoriesForSearch: result.categoriesForSearch
+                        })
+                    }
+                }
                 if (Array.isArray(result.data)) {
                     var ind = 0;
                     for (var te of result.data) {
@@ -245,7 +267,7 @@ router.post('/sefraiahook', function (req, res, next) {
                         }
                         ind++;
                         // setTimeout(function () {
-                            sendMessage(templateMSG);
+                        sendMessage(templateMSG);
                         // }(800 * ind))
 
                     }
