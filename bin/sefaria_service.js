@@ -173,6 +173,7 @@ var SefariaService = function () {
             }
 
         }
+        //
         if (data.heSectionNames) {
             template.template.buttons.push(
                 {
