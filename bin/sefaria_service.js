@@ -312,17 +312,32 @@ var SefariaService = function () {
             })
         })
 
-        function findInnerCategory(data, query) {
-            for (var item of data) {
-                // var result = _.filter(item, {heCategory: query})[0];
-                if (item.heCategory == query || item.category == query)
-                    return resultInner(item.contents);
-
-            }
-            if (data.contents)
-                return findInnerCategory(item.contents, query)
+        function findInnerCategory(data, query, index) {
+            if (!index)
+                index = 0;
             else
-                return [];
+                index++;
+            var result = _.filter(data, {heCategory: query})[0];
+            var resultEn = _.filter(data, {category: query})[0];
+            if (result || resultEn) {
+                var xx = result || resultEn;
+                return resultInner(xx.contents);
+            }
+            if (data)
+                return findInnerCategory(data[0].contents, query, index)
+            // for (var item of data) {
+            //     // var result = _.filter(item, {heCategory: query})[0];
+            //     if (item.heCategory == query || item.category == query)
+            //         return resultInner(item.contents);
+            //
+            // }
+
+            // else
+            //     index++;
+            // if (data[index])
+            //     return findInnerCategory(item.contents, query, index)
+            // else
+            //     return [];
         }
 
         function resultInner(data) {
