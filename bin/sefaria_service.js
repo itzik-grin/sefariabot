@@ -81,10 +81,10 @@ var SefariaService = function () {
                     })
 
                 }
-                else if(data.completions) {
+                else if (data.completions && data.completions.length) {
                     var template = anotherSearchTemplate(query, data);
                     resolve({status: true, data: template});
-                }else{
+                } else {
                     var template = textTemplate('מצטערים. אך אין מידע על טקסט זה');
                     resolve({status: true, data: template});
                 }
@@ -273,7 +273,6 @@ var SefariaService = function () {
     this.setIntegrationName = function (name) {
         _integration = name;
     }
-
 
 
     var SearchName = function (query, options) {
