@@ -5,66 +5,9 @@ var SefariaService = function () {
     var Q = require('q');
     var domain = 'https://dev.sefaria.org/api';
     var ver = '';
+    var _integration;
     this.books = {};
-    this.Search = function (query) {
-        var promise = new Promise(function (resolve, reject) {
-            if (!query)
-                throw Error('Missing query');
-            if (typeof query === "object")
-                throw Error('invalid query');
-            else
-                SearchName(query).then(function (resultAll) {
-                    var dada = resultAll.completions;
-                    if (!dada.length)
-                        resolve(false);
-                    else {
-
-                        var promisses = [];
-                        dada.forEach(function (element) {
-                            promisses.push(SearchName(element))
-                        });
-                        Promise.all(promisses).then(function (result) {
-                                var books = [], Persons = [], others = [], unknow = [];
-                                for (var i = 0; i < result.length; i++) {
-                                    var item = result[i];
-                                    if (item.type == 'ref') {
-                                        if (item.is_book)
-                                            books.push({
-                                                title: (item.completions && item.completions.length ? item.completions[0] : item.book),
-                                                ref: item.ref
-                                            });
-                                        else
-                                            others.push({
-                                                title: (item.completions && item.completions.length ? item.completions[0] : item.book),
-                                                ref: item.ref
-                                            });
-                                    }
-                                    else if (item.type == 'Person') {
-                                        Persons.push({
-                                            title: (item.completions && item.completions.length ? item.completions[0] : item.key),
-                                            ref: 'person/' + item.key
-                                        });
-                                    }
-                                    else {
-                                        unknow.push(item);
-                                    }
-                                }
-
-                                resolve({books: books, persons: Persons, others: others})
-
-                            }
-                            , function (err) {
-                                reject(err);
-                            });
-                    }
-
-                }, function (err) {
-                    reject(err);
-                })
-        });
-        return promise;
-    };
-    this.SearchNew = function (query, clientSearch) {
+    this.Search = function (query, clientSearch) {
         if (!query)
             throw Error('Missing query');
         if (typeof query === "object")
@@ -110,7 +53,7 @@ var SefariaService = function () {
             SearchIndex(query).then(function (result) {
                 var categories = result.categories;
                 var template = textTemplate('הקש טקסט לחיפוש ב' + query, {})
-                resolve({status: true, data: template, categoriesForSearch: categories})
+                resolve({status: true, data: template, categoriesForSearch: categories || []})
             })
         })
     }
@@ -277,7 +220,7 @@ var SefariaService = function () {
             }
         }
         var btns = [];
-        var maxIndex = 3;
+        var maxIndex = (_integration == 'telegram' ? 15 : 3);
         var index = 0;
         var arrTemplates = [{
             type: 'template',
@@ -324,6 +267,9 @@ var SefariaService = function () {
                 resolve(template);
             })
         })
+    }
+    this.setIntegrationName = function (name) {
+        _integration = name;
     }
     this.books.Get = function (query) {
         if (!query)
