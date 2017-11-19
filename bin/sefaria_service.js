@@ -4,9 +4,8 @@ var SefariaService = function () {
     var request = require("request");
     var Q = require('q');
     var domain = 'https://dev.sefaria.org/api';
-    var ver = '';
     var _integration;
-    this.books = {};
+
     this.Search = function (query, clientSearch) {
         if (!query)
             throw Error('Missing query');
@@ -15,7 +14,7 @@ var SefariaService = function () {
         else {
             var ResQuery = query.split(':');
             if (clientSearch) {
-                return SearchApi(query, clientSearch.categoriesForSearch)
+                return SearchApiInBook(query, clientSearch.categoriesForSearch)
             }
             else if (ResQuery && ResQuery.length && ResQuery[0] == 'q') {
                 return querySearch(ResQuery);
@@ -82,8 +81,11 @@ var SefariaService = function () {
                     })
 
                 }
-                else {
+                else if(data.completions) {
                     var template = anotherSearchTemplate(query, data);
+                    resolve({status: true, data: template});
+                }else{
+                    var template = textTemplate('מצטערים. אך אין מידע על טקסט זה');
                     resolve({status: true, data: template});
                 }
             }, function (err) {
@@ -271,14 +273,7 @@ var SefariaService = function () {
     this.setIntegrationName = function (name) {
         _integration = name;
     }
-    this.books.Get = function (query) {
-        if (!query)
-            throw Error('Missing query');
-        if (typeof query === "object")
-            throw Error('invalid query');
-        else
-            return SearchName(query);
-    };
+
 
 
     var SearchName = function (query, options) {
@@ -290,7 +285,7 @@ var SefariaService = function () {
         return exec('v2/index', 'GET', query, options);
     };
 
-    var SearchApi = function (query, categories) {
+    var SearchApiInBook = function (query, categories) {
         var regexCat = '';
         for (var ind in categories) {
             regexCat += (ind > 0 ? "/" : '') + categories[ind];
