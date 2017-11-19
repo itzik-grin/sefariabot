@@ -5,9 +5,14 @@
 #### Supported by most Messengers Apps
 ![apps](images/apps.jpeg)
 
-> ###Messenger Demo:
+--- 
+
+> Messenger Demo:
+
 ![Messenger](images/messenger.png)
 
-> ###Telegram Demo:
+--- 
+> Telegram Demo:
+
 ![Telegram](images/telegram.jpeg)
 
