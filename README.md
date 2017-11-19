@@ -14,5 +14,5 @@
 --- 
 > Telegram Demo:
 
-![Telegram](images/telegram.jpeg)
+![Telegram](images/telegram.png)
 
