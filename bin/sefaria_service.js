@@ -51,6 +51,7 @@ var SefariaService = function () {
         return new Promise(function (resolve, reject) {
             SearchIndex(query).then(function (result) {
                 var categories = result.categories;
+                categories.push(result.title);
                 var template = textTemplate('הקש טקסט לחיפוש ב' + query, {})
                 resolve({status: true, data: template, categoriesForSearch: categories || []})
             })
@@ -290,6 +291,8 @@ var SefariaService = function () {
             regexCat += (ind > 0 ? "/" : '') + categories[ind];
         }
         regexCat += '.*';
+        console.log('regexCat');
+        console.log(regexCat);
         return new Promise(function (resolve, reject) {
             var postQuery = {
                 "size": 100,
