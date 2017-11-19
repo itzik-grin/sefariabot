@@ -4,7 +4,7 @@
 var helper = function () {
     this.validObjectId = validObjectId;
     this.validateEmail = validateEmail;
-    this.validInteger=validInteger;
+    this.validInteger = validInteger;
     global.generalError = {
         "error": {
             "message": "oops! somesthing went wrong ,please try later",
@@ -16,18 +16,9 @@ var helper = function () {
         var reg = /^(?=[a-f\d]{24}$)(\d+[a-f]|[a-f]+\d)/i;
         return reg.test(id);
     }
+
     function validInteger(num) {
         return !isNaN(num);
-    }
-    
-    function ResultCustomerObject(customer) {
-        if (customer.line && customer.line.profile) {
-            customer.line.profile.last_updated = undefined;
-        }
-        if (customer.wechat && customer.wechat.profile) {
-            customer.wechat.profile.last_updated = undefined;
-        }
-        return customer;
     }
 
     function validateEmail(email) {
